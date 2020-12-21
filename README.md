@@ -39,7 +39,7 @@ CREATE TABLE t (
 通常一条查询语句的结构可以表示为：SELECT -> FROM -> (WHERE) -> (GROUP BY) -> (HAVING) -> (ORDER BY) -> (LIMIT)，
 而自动生成SQL查询语句的过程其实就是随机生成一棵语法树的过程。
 
-![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/SQL%E8%AF%AD%E6%B3%95%E6%A0%91.png)
+![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/SQL%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E6%A0%91.png)
 
 （PS：图中由一个点出发的表示只能生成其中一个模块）
 
