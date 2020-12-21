@@ -50,13 +50,13 @@ CREATE TABLE t (
 
 #### 基础：
 
-[Node](https://github.com/PHISSTOOD/PingCAP-Assignment/blob/master/src/Generator/Node/Node.java) 类为项目中最基础的类，是其他
+[Node](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Node/Node.java) 类为项目中最基础的类，是其他
 模块的父类，主要负责承担树上每个结点的基础，例如记录它的父亲结点，记录当前的层数，记录scope。除Scope类，其余所有可能出现在语法树上的类
 都会继承这一个类。
 
-Scope类负责记录当前结点可以选择的Table及Column的范围，以及记录生成table的别名的编号。
+[Scope](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Node/Scope.java)类负责记录当前结点可以选择的Table及Column的范围，以及记录生成table的别名的编号。
 
-Query类，承担一个查询入口的功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
+[Query](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/Query.java)类，承担一个查询入口的功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
 三个部分。也在这一类中将各个子结点生成的语句整合。
 
 SelectList类，负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
