@@ -59,53 +59,53 @@ CREATE TABLE t (
 [Query](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/Query.java)类，承担一个查询入口的功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
 三个部分。也在这一类中将各个子结点生成的语句整合。
 
-SelectList类，负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
+[SelectList](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/SelectList.java)类，负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
 
-FromClause类，负责一个查询语句中from到select之间的生成，即从哪些表中搜索，包含单独的表，join及子查询，
+[FromClause](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/FromClause.java)类，负责一个查询语句中from到select之间的生成，即从哪些表中搜索，包含单独的表，join及子查询，
 
-WhereCondition类，负责一个查询语句where后的生成。
+WhereCondition，负责一个查询语句where后的生成。
 
-#### 目录Element中的类：
+#### 目录[Element](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Element)中的类：
 
-枚举类SQLType，负责记录可能出现的数据类型，包括：int，string，bool，聚合。
+枚举类[SQLType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/SQLType.java)，负责记录可能出现的数据类型，包括：int，string，bool，聚合。
 
-枚举类AggregateType，CompareType，ComputeType枚举了可能出现的聚合函数，比较操作符，运算操作符以及他们对应的SQLType。
+枚举类[AggregateType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/AggregateType.java)，[CompareType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/CompareType.java)，[ComputeType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/ComputeType.java)枚举了可能出现的聚合函数，比较操作符，运算操作符以及他们对应的SQLType。
 
-Operator类和Column类对应的是操作符和一个数据库中列。
+[Operator](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Operator.java)类和[Column](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Column.java)类对应的是操作符和一个数据库中列。
 
-Table类负责表示一个表结构，包含表名，表的别名，表中的列。之后的子查询的结构也会被表示为一个Table，是一个比较重要的类。
+[Table](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Table.java)类负责表示一个表结构，包含表名，表的别名，表中的列。之后的子查询的结构也会被表示为一个Table，是一个比较重要的类。
 
-#### 目录Table中的类：
+#### 目录[Table](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Table)中的类：
 
-TableRef类，代表表名的基础的类，在Node类的基础上添加储存Table的List。TableOrQuery代表单个的表，JoinTable类代表多个表的Join，SubQuery
+[TableRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableRef.java)类，代表表名的基础的类，在Node类的基础上添加储存Table的List。[TableOrQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableOrQuery.java)代表单个的表，[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)类代表多个表的Join，[SubQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/SubQuery.java)
 代表子查询。
 
-Join：JoinTable主要负责储存多个表的信息，join的类型和JoinCondition。JoinCondition类负责记录两个表Join的条件。
+[Join](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/Join.java)：[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)主要负责储存多个表的信息，join的类型和[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)。[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)类负责记录两个表Join的条件。
 
-#### 目录Expression中的类：
+#### 目录[Expression](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Expression)中的类：
 
-这其中最基础的类是Expression类，它继承类Node类，但也会被其他的该目录下的类继承。其添加了属性 SQLType，负责记录这一结点对应的SQL中的值的属性。
+这其中最基础的类是[Expression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/Expression.java)类，它继承类Node类，但也会被其他的该目录下的类继承。其添加了属性 SQLType，负责记录这一结点对应的SQL中的值的属性。
 同时这一个类中也有随机生成其他子类的方法generate。
 
-ColumnRef类代表那些会在select后会出现的列名，其在父类的基础上多了一个reference的属性，负责记录列名。
+[ColumnRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ColumnRef.java)类代表那些会在select后会出现的列名，其在父类的基础上多了一个reference的属性，负责记录列名。
 
-AggregateExpression类负责表示聚合函数，其中会记录聚合函数的类型，以及以那一列作为聚合函数的根据。
+[AggregateExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/AggregateExpression.java)类负责表示聚合函数，其中会记录聚合函数的类型，以及以那一列作为聚合函数的根据。
 
-BinExpression类，在Expression的基础上添加了两个子Expression，负责记录操作左右的两个Expression。其继承了Expression，被ComputeExpression，
+[BinExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/BinExpression.java)类，在Expression的基础上添加了两个子Expression，负责记录操作左右的两个Expression。其继承了Expression，被ComputeExpression，
 CompareExpression，ChildExpression类继承。
 
-ComputeExpression类，表示一个计算结果，例如：a+b。其有一个计算操作符和两个子Expression构成，通过计算符规定了两个子Expression的SQLType以及
+[ComputeExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ComputeExpression.java)类，表示一个计算结果，例如：a+b。其有一个计算操作符和两个子Expression构成，通过计算符规定了两个子Expression的SQLType以及
 结果的SQLType。
 
-CompareExpression类，表示一个计算结果，例如：a<56。其有一个比较操作符和两个子Expression构成，通过比较运算符规定了两个子Expression的SQLType。
+[CompareExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/CompareExpression.java)类，表示一个计算结果，例如：a<56。其有一个比较操作符和两个子Expression构成，通过比较运算符规定了两个子Expression的SQLType。
 
-ChildExpression类，主要出现在whereClause后，负责扩大条件的数量。
+[ChildExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ChildExpression.java)类，主要出现在whereClause后，负责扩大条件的数量。
 
-ConstExpression类，负责表示一个常量，在本项目中主要包含Int型和String型，对应数据库中Int和Varchar。常量的生成由随机生成函数RandomGenerate完成。
+[ConstExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ConstExpression.java)类，负责表示一个常量，在本项目中主要包含Int型和String型，对应数据库中Int和Varchar。常量的生成由随机生成函数RandomGenerate完成。
 
-#### 目录Random中的类：
+#### 目录[Random](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Random)中的类：
 
-RandomGenerate类主要负责生成随机数和随机制定数据类型的值，RandomPick主要负责从指定的List中随机抽取。
+[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomGenerate.java)类主要负责生成随机数和随机制定数据类型的值，[RandomPick](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomPick.java)主要负责从指定的List中随机抽取。
 
 #### 难点实现：
 
