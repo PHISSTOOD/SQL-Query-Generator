@@ -1,7 +1,8 @@
 package Generator.Query;
 
 
-import Generator.Element.NamedRelation;
+
+import Generator.Element.Table;
 import Generator.Node.Node;
 import Generator.Table.TableRef;
 
@@ -16,7 +17,7 @@ public class FromClause extends Node {
         this.tableRefs = new ArrayList<>();
         TableRef tableRef = TableRef.generate(this);
         tableRefs.add(tableRef);
-        for(NamedRelation o : tableRef.getRefs()){
+        for(Table o : tableRef.getRefs()){
             this.getScope().getColumns().add(o);
         }
     }

@@ -21,7 +21,7 @@ public class AggregateExpression extends Expression{
         }else if(randomPick10()<9){
             expression = new ColumnRef(this,aggregationType.getType());
         }else{
-            expression = new OpSelect(this,aggregationType.getType());
+            expression = new ComputeExpression(this,aggregationType.getType());
         }
     }
 

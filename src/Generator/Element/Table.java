@@ -3,12 +3,12 @@ package Generator.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NamedRelation {
+public class Table {
     String name;
     String alias;
     List<Column> columns;
 
-    public NamedRelation() {
+    public Table() {
         this.name = null;
         this.alias = null;
         columns = new ArrayList<>();
@@ -33,6 +33,5 @@ public class NamedRelation {
     public void setAlias(String alias) {
         this.alias = alias;
     }
-
 
 }

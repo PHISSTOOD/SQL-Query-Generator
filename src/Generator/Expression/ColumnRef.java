@@ -1,8 +1,8 @@
 package Generator.Expression;
 
 import Generator.Element.Column;
-import Generator.Element.NamedRelation;
 import Generator.Element.SQLType;
+import Generator.Element.Table;
 import Generator.Node.Node;
 import Generator.Random.RandomPick;
 
@@ -10,7 +10,7 @@ import java.util.List;
 
 import static Generator.Random.RandomGenerate.randomPickSpecific;
 import static Generator.Random.RandomPick.randomPickColumn;
-import static Generator.Random.RandomPick.randomPickNamedRelation;
+import static Generator.Random.RandomPick.randomPickTable;
 
 public class ColumnRef extends Expression{
 
@@ -20,9 +20,9 @@ public class ColumnRef extends Expression{
         super(parent);
         reference = "";
         if(curSqlType==null){
-            NamedRelation namedRelation = randomPickNamedRelation(this.getScope().getColumns());
-            reference += namedRelation.getAlias() + ".";
-            Column randomColumn = randomPickColumn(namedRelation.getColumns());
+            Table table = randomPickTable(this.getScope().getColumns());
+            reference += table.getAlias() + ".";
+            Column randomColumn = randomPickColumn(table.getColumns());
             reference += randomColumn.getColumnName();
             sqlType = randomColumn.getSqlType();
         }else{
@@ -32,9 +32,9 @@ public class ColumnRef extends Expression{
             }else{
                 int index = randomPickSpecific(list.size());
                 Object[] entry = list.get(index);
-                NamedRelation namedRelation = (NamedRelation)entry[0];
+                Table table = (Table)entry[0];
                 Column column = (Column)entry[1];
-                reference += namedRelation.getAlias() + "." + column.getColumnName();
+                reference += table.getAlias() + "." + column.getColumnName();
             }
         }
 

@@ -6,25 +6,22 @@ import Generator.Element.SQLType;
 import Generator.Node.Node;
 import Generator.Random.RandomPick;
 
-public class OpSelect extends Expression {
-
+public class ComputeExpression extends BinExpression{
     Operator operator;
-    ColumnRef leftColumnRef;
-    ColumnRef rightColumnRef;
 
-    public OpSelect(Node parent, SQLType curSqlType) {
+    public ComputeExpression(Node parent, SQLType curSqlType) {
         super(parent);
         RandomPick randomPick = new RandomPick();
         ComputeType computeType = randomPick.randomPickCompute();
         operator = new Operator(computeType.getCode(),computeType.getType(),computeType.getType(),computeType.getType());
-        leftColumnRef = new ColumnRef(this,operator.getLeft());
-        rightColumnRef = new ColumnRef(this,operator.getRight());
+        leftExpression = new ColumnRef(this,operator.getLeft());
+        rightExpression = new ColumnRef(this,operator.getRight());
 
     }
 
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(leftColumnRef.toString()).append(" " + operator.getOperatorName() + " ").append(rightColumnRef.toString());
+        stringBuilder.append(leftExpression.toString()).append(" " + operator.getOperatorName() + " ").append(rightExpression.toString());
         return stringBuilder.toString();
     }
 }

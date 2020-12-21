@@ -1,21 +1,21 @@
 package Generator.Sever;
 
 import Generator.Element.Column;
-import Generator.Element.NamedRelation;
 import Generator.Element.SQLType;
+import Generator.Element.Table;
 
 public class Table_t {
 
 
-    public static NamedRelation addTable_t(){
-        NamedRelation namedRelation = new NamedRelation();
-        namedRelation.setName("t");
+    public static Table addTable_t(){
+        Table table = new Table();
+        table.setName("t");
         Column a = new Column("a", SQLType.INT);
         Column b = new Column("b", SQLType.INT);
         Column c = new Column("c", SQLType.STRING);
-        namedRelation.getColumns().add(a);
-        namedRelation.getColumns().add(b);
-        namedRelation.getColumns().add(c);
-        return namedRelation;
+        table.getColumns().add(a);
+        table.getColumns().add(b);
+        table.getColumns().add(c);
+        return table;
     }
 }

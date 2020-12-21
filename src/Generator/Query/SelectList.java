@@ -1,7 +1,7 @@
 package Generator.Query;
 
 import Generator.Element.Column;
-import Generator.Element.NamedRelation;
+import Generator.Element.Table;
 import Generator.Expression.Expression;
 import Generator.Node.Node;
 
@@ -13,14 +13,14 @@ import static Generator.Random.RandomGenerate.*;
 public class SelectList extends Node {
 
     List<Expression> expressions;
-    NamedRelation derivedColumns;
+    Table derivedColumns;
     int columns;
 
     public SelectList(Node parent) {
         super(parent);
         columns = 0;
         expressions = new ArrayList<>();
-        derivedColumns = new NamedRelation();
+        derivedColumns = new Table();
         do{
             Expression expression = Expression.generate(this, null);
             String newColumnName = "c" + String.valueOf(columns++);
@@ -41,7 +41,7 @@ public class SelectList extends Node {
         return stringBuilder.toString();
     }
 
-    public NamedRelation getDerivedColumns() {
+    public Table getDerivedColumns() {
         return derivedColumns;
     }
 }

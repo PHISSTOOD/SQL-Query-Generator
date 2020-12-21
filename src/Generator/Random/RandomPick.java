@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class RandomPick {
 
-    public static NamedRelation randomPickNamedRelation(List<NamedRelation> refs){
+    public static Table randomPickTable(List<Table> refs){
         if(refs.size()==0 || refs == null){
             return null;
         }

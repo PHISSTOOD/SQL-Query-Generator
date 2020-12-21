@@ -18,7 +18,7 @@ public class Expression extends Node {
         if(randomPick8()==0 && parent.getLevel()<5 && !(parent instanceof CompareExpression)){
             return new AggregateExpression(parent,sqlType);
         }else if(randomPick8()==0 && parent.getLevel()<5){
-            return new OpSelect(parent,sqlType);
+            return new ComputeExpression(parent,sqlType);
         }else if(parent.getScope().getColumns().size()!=0 && randomPick8()<3 && !(parent instanceof SelectList)){
             return new ConstExpression(parent,sqlType);
         }else{

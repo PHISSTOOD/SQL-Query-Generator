@@ -1,17 +1,16 @@
 package Generator.Node;
 
 import Generator.Element.Column;
-import Generator.Element.NamedRelation;
+import Generator.Element.Table;
 import Generator.Element.SQLType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Scope {
     Scope parent;
-    List<NamedRelation> tables;
-    List<NamedRelation> columns;
+    List<Table> tables;
+    List<Table> columns;
     int seq;
 
     public Scope(Scope parent) {
@@ -27,29 +26,21 @@ public class Scope {
         }
     }
 
-    public List<NamedRelation> getTables() {
+    public List<Table> getTables() {
         return tables;
     }
 
-    public void setTables(List<NamedRelation> tables) {
-        this.tables = tables;
-    }
-
-    public List<NamedRelation> getColumns() {
+    public List<Table> getColumns() {
         return columns;
-    }
-
-    public void setColumns(List<NamedRelation> columns) {
-        this.columns = columns;
     }
 
     public List<Object[]> columnOfType(SQLType sqlType){
         List<Object[]> result = new ArrayList<>();
-        for(NamedRelation namedRelation : columns){
-            for(Column column : namedRelation.getColumns()){
+        for(Table table : columns){
+            for(Column column : table.getColumns()){
                 if(column.getSqlType()==sqlType){
                     Object[] cur = new Object[2];
-                    cur[0] = namedRelation;
+                    cur[0] = table;
                     cur[1] = column;
                     result.add(cur);
                 }

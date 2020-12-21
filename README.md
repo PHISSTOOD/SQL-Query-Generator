@@ -1,8 +1,8 @@
 ## PingCAP 小作业 - SQL 查询生成器
 
-开始时间 | 北京时间：2020 年 12 月 9 日，
+开始时间 | 北京时间：2020 年 12 月 17 日晚，
 
-截止时间 | 北京时间：2019 年 12 月 16 日，
+截止时间 | 北京时间：2019 年 12 月 23 日，
 
 
 题目:
@@ -33,62 +33,104 @@ CREATE TABLE t (
 
 ### 题目分析
 在测试数据库时，通常选择查询的方式来测试，同时也能测试数据库的性能。而编写SQL的查询语句是乏味，无聊，低效的，所以快速的生成SQL语句就能
-方便测试数据库性能。其次，在生成一条SQL语句时，针对库表结构的不同，管理数据的多样性已经不同的应用场景，需要人为的有所干预，例如选择哪些
-列进行搜索，通过哪些表的链接，或者使用怎样的聚合。但我认为本题的主要考察的不是这一部分人为选择查询条件的交互的部分，所以在测试类中提前
-设置的生成条件。本项目主要针对查询语句的生成，以及其扩展。
+方便测试数据库性能。因此本项目的目标是针对一个既定的表的结构，能够完成SQL查询语句的快速生成，以方便测试数据库的性能。
 
 ### 解题思路
-因为一条查询语句的结构有其特定的顺序，可以表示为：SELECT -> FROM -> (WHERE) -> (GROUP BY) -> (HAVING) -> (ORDER BY) -> (LIMIT)，
-括号中意为该子句可以不存在。在完成项目的时候主要有两种思路：
-1. 通过判断接下来的语句来不断的更新已有的SQL语句，举个例子：
+通常一条查询语句的结构可以表示为：SELECT -> FROM -> (WHERE) -> (GROUP BY) -> (HAVING) -> (ORDER BY) -> (LIMIT)，
+而自动生成SQL查询语句的过程其实就是随机生成一棵语法树的过程。
 
-   例如此时有方法：select()：表示添加SQL查询语句中"SELECT"的部分,columns()：表示添加SQL查询语句中要查询出的属性的部分（即列名）,
-   from()：表示添加SQL查询语句中"FROM"的部分..
-   
-   通常一个SQL查询语句生成时都先调用select()，然后通过判断其后跟着的条件，例如如果跟了列名，则调用columns()来添加列名的部分，
-   但如果没有类似列名的条件，则添加"*"然后点用from()。以此类推，通过不断的对条件的判断来调用不同的函数，进行添加、完善SQL查询语句。
- 
-2. 收集各个部分的条件，然后统一的拼接起来。本项目选用的是第二种思路，具体的思路将在下文中详细叙述。
+![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
-两种思路的比较：
+（PS：图中由一个点出发的表示只能生成其中一个模块）
 
-这样做的优点我认为有以下几点（下文中的模块意为查询语句中每一个部分，例如列名，表名，JOIN）：
-1. 每一个模块设为一个类，条理更加清晰，并且能够记录表述关于这一模块更多的属性。
-2. 每个模块通过其构造函数能够尽可能少的需要人为的输入。
-3. 最终的每一个查询对应一个Query对象，因此在人输入条件时不必强制完全按照查询语句本来的顺序，例如在设置条件是可以先设置FROM的表名，
-然后再设置列名，但不提倡。
+所以解题思路就是如何随机生成一棵类似的语法树，并将其组成一条SQL查询语句。同时在生成的过程中，也要注意条件的合理性，例如数据类型是否对应等。
 
 ### 结构分析
-本节将详细描述实现的逻辑。
+本节将详细描述实现的逻辑。整体的思路就是为上图中每一中可能出现的模块构造一个类。
 
-#### 整体结构
-项目中为除SELECT，FROM之外的所有模块创建了独自的类，Column（列名），Condition（WHERE语句的条件），Group（GROUP BY），Having（HAVING），
-Join（各种类型Join），Limit（Limit），On（Join后面的On语句），Order（ORDER BY），Table（FROM后跟的表名）。
+#### 基础：
 
-Column 和 Table主要包含属性：本身的列名（表名），是否使用AS，别名。后两者可以为空。
+[Node](https://github.com/PHISSTOOD/PingCAP-Assignment/blob/master/src/Generator/Node/Node.java) 类为项目中最基础的类，是其他
+模块的父类，主要负责承担树上每个结点的基础，例如记录它的父亲结点，记录当前的层数，记录scope。除Scope类，其余所有可能出现在语法树上的类
+都会继承这一个类。
 
-Condition 主要包含三个字符串类型，分别表示操作符前的条件，操作符，操作符后的条件。
+Scope类负责记录当前结点可以选择的Table及Column的范围，以及记录生成table的别名的编号。
 
-Group内为两个List，List<Column> 和 List<Having>, 表示group by的组，以及可能有的聚合的条件。
+Query类，承担一个查询入口的功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
+三个部分。也在这一类中将各个子结点生成的语句整合。
 
-Having 内包含四个字符串类型，aggregate（聚合函数名），column（列名），operator（操作符），comparator（操作符后跟的数）。
+SelectList类，负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
 
-Join 包含joinType，table（表名），on（是否使用on语句，及on的条件，本质上on与condition相同），using（是否使用using，using和on只能2选1）。
+FromClause类，负责一个查询语句中from到select之间的生成，即从哪些表中搜索，包含单独的表，join及子查询，
 
-Limit 包含offset，size。offset如果没设置默认为0。
+WhereCondition类，负责一个查询语句where后的生成。
 
-Order orderName及orderType，分表表示根据哪一列进行排序以及排序的类型（默认为ASC）。
+#### 目录Element中的类：
 
-#### Query主体结构
-SQL查询语句的生成主要在Query类中生成，一个Query就对应一条完整的查询语句。Query中根据SELECT，FROM，WHERE，GROUP BY，HAVING，ORDER BY，LIMIT
-对每一个小模块进行实现，并且具有添加各个模块内的条件的方法。其中列名，表名，JOIN，WHERE Condition，Order为List，可以储存多个该类的条件。
+枚举类SQLType，负责记录可能出现的数据类型，包括：int，string，bool，聚合。
 
-而生成查询语句对应的是generate方法，里面主要调用针对各个模块的list或实体转换成字符串的方法，然后统一拼接起来。
+枚举类AggregateType，CompareType，ComputeType枚举了可能出现的聚合函数，比较操作符，运算操作符以及他们对应的SQLType。
 
-Query类还有一些校验的方法，例如校验JoinType，OrderType是否书写正确。
+Operator类和Column类对应的是操作符和一个数据库中列。
 
-这样的结构也能够支持创建子查询，例如题目中5所示，就将addTable方法的入参传为(new Query().add(..各类条件..)，true（意为是通过SQL语句
-生成的表）)。
+Table类负责表示一个表结构，包含表名，表的别名，表中的列。之后的子查询的结构也会被表示为一个Table，是一个比较重要的类。
+
+#### 目录Table中的类：
+
+TableRef类，代表表名的基础的类，在Node类的基础上添加储存Table的List。TableOrQuery代表单个的表，JoinTable类代表多个表的Join，SubQuery
+代表子查询。
+
+Join：JoinTable主要负责储存多个表的信息，join的类型和JoinCondition。JoinCondition类负责记录两个表Join的条件。
+
+#### 目录Expression中的类：
+
+这其中最基础的类是Expression类，它继承类Node类，但也会被其他的该目录下的类继承。其添加了属性 SQLType，负责记录这一结点对应的SQL中的值的属性。
+同时这一个类中也有随机生成其他子类的方法generate。
+
+ColumnRef类代表那些会在select后会出现的列名，其在父类的基础上多了一个reference的属性，负责记录列名。
+
+AggregateExpression类负责表示聚合函数，其中会记录聚合函数的类型，以及以那一列作为聚合函数的根据。
+
+BinExpression类，在Expression的基础上添加了两个子Expression，负责记录操作左右的两个Expression。其继承了Expression，被ComputeExpression，
+CompareExpression，ChildExpression类继承。
+
+ComputeExpression类，表示一个计算结果，例如：a+b。其有一个计算操作符和两个子Expression构成，通过计算符规定了两个子Expression的SQLType以及
+结果的SQLType。
+
+CompareExpression类，表示一个计算结果，例如：a<56。其有一个比较操作符和两个子Expression构成，通过比较运算符规定了两个子Expression的SQLType。
+
+ChildExpression类，主要出现在whereClause后，负责扩大条件的数量。
+
+ConstExpression类，负责表示一个常量，在本项目中主要包含Int型和String型，对应数据库中Int和Varchar。常量的生成由随机生成函数RandomGenerate完成。
+
+#### 目录Random中的类：
+
+RandomGenerate类主要负责生成随机数和随机制定数据类型的值，RandomPick主要负责从指定的List中随机抽取。
+
+#### 难点实现：
+
+在完成的过程中，我认为值得注意的点主要包括：获取可以查询的范围、join及其他运算对应的数据类型的对称、找不到列的情况。
+
+获取可以查询的范围：
+
+这个点的实现主要通过Scope类及SelectList中的derivedColumns。我通过Scope的设定，在Scope中记录当前结点可以访问到的表和列，并且子结点可以对Scope的
+值进行继承，这样就实现类在生成from后语句时，可以在Scope中的表的List中随机产生，而生成select后的列名时可以通过在Scope中的列名中随机产生。而
+SelectList中derivedColumns主要负责记录一个子查询的查找出来的列，然后记录在其父结点的Scope中。这其中在FromClause的生成中，需要对Scope进行区分，
+防止FromClause影响父结点的Scope。
+
+join及其他运算对应的数据类型的对称：
+
+这一点主要通过Expression中SQLType的记录来实现。首先在枚举类中例举了每一个操作符支持的数据类型，并且在表的传入过程中传入对应的数据类型。所以当涉及到
+操作符时，会从枚举类中获取目标数据类型，然后挑选满足该数据类型的列。
+
+找不列的情况：
+
+因为查询语句的生成过程为随机的，所以可能会出现找不到列的情况。例如在一个子查询出来的列为varchar类型，在外层与一个表join的条件，另一个表先随机出了
+一个int型的列，那么从子查询中就无法找到满足条件的列，因此无法完成生成完整的SQL语句。例：
+
+SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as sub_3 on a = ? where t_1/b < 20
+
+语句中？的地方就无法找到对应的列。因此，遇见类似无法执行下去的情况，解决办法是抛出错误及错误的信息，在最终执行完成生成一个执行报告。
 
 ### 延伸
 #### 分布式
@@ -99,7 +141,7 @@ Query类还有一些校验的方法，例如校验JoinType，OrderType是否书�
 
 但这种request是针对单表的，因为在TiDB中key的组成是由table id 和 row id组成的。所以在查询语句涉及到多表的情况时，上述的结构无法支持，
 因此需要对涉及到多表的SQL查询语句进行处理。同时因为之前博客中的提到的为了减少RPC调用（RPC调用，网络传播，IO会导致大量的开销），
-避免无意义的网络传输，所以要将计算尽量靠近节点，将Filter，聚合函数，Group By下推。这不仅更高效，在实现上也更简单。
+避免无意义的网络传输，所以要将计算尽量靠近结点，将Filter，聚合函数，Group By下推。这不仅更高效，在实现上也更简单。
 
 RPC类，意为实现远程调用针对单表的SQL语句的功能，其主要的方法为rpc()，旨在执行request返回Result。
 
@@ -141,39 +183,18 @@ Execute意为针对子语句进行查询，Result Union意为针对子结果进�
 系统： Mac OS 10.15.6/ Jdk 1.8
 
 #### 测试设计
-测试主要分为两部分，一部分是提前预设好添加的条件，然后与应该生成的SQL查询语句进行对比，另一部分是可以在终端交互，
-可以由人工根据提示输入的条件，生成SQL查询语句，同时也可以选择是类MySQL端还是类分布式数据库端的。类MySQL端的会输出一条SQL查询语句，
-类分布式数据库端的会输出如前一节描述的结果。
+
 
 #### 测试结果
-第一部分（提前设定）：
-
-该部分由test.test中的GenerateTest实现，预先设定了题目中出现的SQL语句，自编的SQL查询语句，及有错误输入的SQL语句。
-
-自编的SQL查询语句前三条是基于表t，给三列赋予一定的属性产生的查询语句，另外一条是基于TPCH改编的查询语句。
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%A2%98%E7%9B%AE%E4%B8%AD%E7%9A%84%E8%BE%93%E5%85%A5.png)
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E5%85%B6%E4%BB%96%E8%BE%93%E5%85%A5.png)
+执行结果
 
 ![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
+![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
-第二部分（终端输入）：
+![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
-该部分由test.test中的TerminalTest实现，可以在终端选择模式并输入条件生成想生成的SQL查询语句。
-
-手动输入时请参照说明及用例。
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5SQL%201.png)
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5SQL%202.png)
-
-终端输入生成类分布式 SQL查询语句
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5SQL%EF%BC%88%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%891.png)
-
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E6%89%8B%E5%8A%A8%E8%BE%93%E5%85%A5SQL%EF%BC%88%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%892.png)
+![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
 ### 说明
 1. 设计中的子句只包含了SELECT，FROM，JOIN（JOIN，CROSS JOIN，INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，USING，WHERE，

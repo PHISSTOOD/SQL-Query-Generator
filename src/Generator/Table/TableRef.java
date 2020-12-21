@@ -1,6 +1,7 @@
 package Generator.Table;
 
-import Generator.Element.NamedRelation;
+
+import Generator.Element.Table;
 import Generator.Node.Node;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import static Generator.Random.RandomGenerate.randomPick5;
 
 public class TableRef extends Node {
 
-    List<NamedRelation> refs;
+    List<Table> refs;
 
     public TableRef(Node parent) {
         super(parent);
@@ -28,7 +29,7 @@ public class TableRef extends Node {
 
     }
 
-    public List<NamedRelation> getRefs() {
+    public List<Table> getRefs() {
         return refs;
     }
 }

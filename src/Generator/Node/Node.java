@@ -1,13 +1,10 @@
 package Generator.Node;
 
-import Generator.Element.SQLType;
 
 public class Node {
 
     Node parent;
     int level;
-    int retry;
-    int retryLimit;
     Scope scope;
 
     public Node(Node parent) {
@@ -31,10 +28,6 @@ public class Node {
 
     public int getLevel() {
         return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     public Scope getScope() {

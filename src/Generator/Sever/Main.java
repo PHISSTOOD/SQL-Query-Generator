@@ -1,6 +1,7 @@
 package Generator.Sever;
 
-import Generator.Element.NamedRelation;
+
+import Generator.Element.Table;
 import Generator.Node.Scope;
 import Generator.Query.Query;
 import com.sun.tools.javac.util.Name;
@@ -18,8 +19,8 @@ public class Main {
         Map<String,Integer> errorReport = new HashMap<>();
         for(int i = 0;i<num;i++){
             Scope scope = new Scope(null);
-            NamedRelation namedRelation = Table_t.addTable_t();
-            scope.getTables().add(namedRelation);
+            Table table = Table_t.addTable_t();
+            scope.getTables().add(table);
             try{
                 Query newQuery = new Query(null,scope);
                 System.out.println(newQuery.toString());
