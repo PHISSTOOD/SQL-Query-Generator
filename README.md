@@ -44,6 +44,7 @@ CREATE TABLE t (
 （PS：图中由一个点出发的表示只能生成其中一个模块）
 
 所以解题思路就是如何随机生成一棵类似的语法树，并将其组成一条SQL查询语句。同时在生成的过程中，也要注意条件的合理性，例如数据类型是否对应等。
+其中随机生成的部分主要体现在部分类下的generate函数中，翻译成句子是由通过拼接结点的toString方法返回的String完成的。
 
 ### 结构分析
 本节将详细描述实现的逻辑。整体的思路就是为上图中每一中可能出现的模块构造一个类。
@@ -177,7 +178,8 @@ join及其他运算对应的数据类型的对称：
 
 SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as sub_3 on a = ? where t_1/b < 20
 
-语句中"？"的地方就无法找到对应的列。因此，遇见类似无法执行下去的情况，解决办法是抛出错误及错误的信息，在最终执行完成生成一个执行报告。
+语句中"？"的地方就无法找到对应的列。因此，遇见类似无法执行下去的情况，解决办法是抛出错误及错误的信息，在最终执行完成生成一个执行报告。在设计中
+最长等待时间为100毫秒。
 
 ### 实际测试
 
@@ -185,6 +187,9 @@ SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as
 系统： Mac OS 10.15.6/ Jdk 1.8
 
 #### 测试结果
+
+测试时可以输入想要生成的语句的数量，因为之前提到的可能出现的错误，通常产生的结果可能会少20%。
+
 执行结果
 
 ![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C1.png)
@@ -193,16 +198,14 @@ SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as
 
 ![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C3.png)
 
+单词的全部运行结果见：
+[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Result/Generator/Random/RandomGenerate.java)
 
 ### 说明
 1. 设计中的子句只包含了SELECT，FROM，JOIN（INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，WHERE，
-GROUP BY，HAVING，ORDER BY，LIMIT，及五个聚合函数（COUNT，AVG，SUM，MIN，MAX）其余的子句类似BETWEEN，EXIST,IN暂无涉及。
+GROUP BY，HAVING，LIMIT，及五个聚合函数（COUNT，AVG，SUM，MIN，MAX）其余的子句类似BETWEEN，EXIST,IN暂无涉及。
 2. 生成的SQL查询语句均为小写。
 3. 项目中默认了表的结构为题目中所给的表t的结构。
-4. 
-5. 
-6.
-
 
 
 ## 参考资料

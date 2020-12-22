@@ -73,7 +73,7 @@ public class GroupBy extends Node {
                     having += stringBuilder.toString();
                     helper += split1[0];
                 }
-                if((System.currentTimeMillis() - beginTime)>500){
+                if((System.currentTimeMillis() - beginTime)>100){
                     throw new IllegalArgumentException("can't find specific sql type data when generate having condition");
                 }
             }
