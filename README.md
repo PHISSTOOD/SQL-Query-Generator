@@ -39,7 +39,7 @@ CREATE TABLE t (
 通常一条查询语句的结构可以表示为：SELECT -> FROM -> (WHERE) -> (GROUP BY) -> (HAVING) -> (ORDER BY) -> (LIMIT)，
 而自动生成SQL查询语句的过程其实就是随机生成一棵语法树的过程。
 
-![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/SQL%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E6%A0%91.png)
+![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/SQL%E8%AF%AD%E6%B3%95%E6%A0%91.png)
 
 （PS：图中由一个点出发的表示只能生成其中一个模块）
 
@@ -179,19 +179,15 @@ SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as
 #### 测试环境
 系统： Mac OS 10.15.6/ Jdk 1.8
 
-#### 测试设计
-
-
 #### 测试结果
 执行结果
 
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
+![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C1.png)
 
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
+![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C2.png)
 
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
+![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C3.png)
 
-![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
 ### 说明
 1. 设计中的子句只包含了SELECT，FROM，JOIN（INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，WHERE，
