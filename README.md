@@ -199,13 +199,10 @@ SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as
 ![image](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Images/%E7%BB%93%E6%9E%9C3.png)
 
 单词的全部运行结果见：
-[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Result/Generator/Random/RandomGenerate.java)
+[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/Result/%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C.md)
 
 ### 说明
 1. 设计中的子句只包含了SELECT，FROM，JOIN（INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，WHERE，
 GROUP BY，HAVING，LIMIT，及五个聚合函数（COUNT，AVG，SUM，MIN，MAX）其余的子句类似BETWEEN，EXIST,IN暂无涉及。
 2. 生成的SQL查询语句均为小写。
 3. 项目中默认了表的结构为题目中所给的表t的结构。
-
-
-## 参考资料
