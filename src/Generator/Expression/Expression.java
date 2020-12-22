@@ -9,15 +9,17 @@ import static Generator.Random.RandomGenerate.randomPick8;
 public class Expression extends Node {
 
     SQLType sqlType;
+    boolean isAggregate;
 
     public Expression(Node parent) {
         super(parent);
+        isAggregate = false;
     }
 
     public static Expression generate(Node parent, SQLType sqlType){
-        if(randomPick8()==0 && parent.getLevel()<5 && !(parent instanceof CompareExpression)){
+        if(randomPick8()<=1 && parent.getLevel()<5 && !(parent instanceof CompareExpression)){
             return new AggregateExpression(parent,sqlType);
-        }else if(randomPick8()==0 && parent.getLevel()<5){
+        }else if(randomPick8()<1 && parent.getLevel()<5){
             return new ComputeExpression(parent,sqlType);
         }else if(parent.getScope().getColumns().size()!=0 && randomPick8()<3 && !(parent instanceof SelectList)){
             return new ConstExpression(parent,sqlType);
@@ -28,5 +30,9 @@ public class Expression extends Node {
 
     public SQLType getSqlType() {
         return sqlType;
+    }
+
+    public boolean isAggregate() {
+        return isAggregate;
     }
 }

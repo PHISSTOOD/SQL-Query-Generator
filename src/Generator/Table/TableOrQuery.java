@@ -11,7 +11,9 @@ public class TableOrQuery extends TableRef {
 
     public TableOrQuery(Node parent) {
         super(parent);
-        table = randomPickTable(this.getScope().getTables());
+        Table randomTable = randomPickTable(this.getScope().getTables());
+        table = new Table();
+        Table.copy(randomTable,table);
         table.setAlias(this.getScope().aliasGenerate("table_"));
         this.refs.add(table);
     }

@@ -23,6 +23,8 @@ public class AggregateExpression extends Expression{
         }else{
             expression = new ComputeExpression(this,aggregationType.getType());
         }
+        this.sqlType = SQLType.INT;
+        this.isAggregate = true;
     }
 
     public String toString(){

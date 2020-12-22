@@ -2,6 +2,7 @@ package Generator.Expression;
 
 import Generator.Node.Node;
 
+import static Generator.Random.RandomGenerate.randomPick5;
 import static Generator.Random.RandomGenerate.randomPick50;
 
 public class BinExpression extends Expression{
@@ -13,17 +14,8 @@ public class BinExpression extends Expression{
         super(parent);
     }
 
-    public Expression getLeftExpression() {
-        return leftExpression;
-    }
-
-    public Expression getRightExpression() {
-        return rightExpression;
-    }
-
-
     public static BinExpression generate(Node parent){
-        if(randomPick50()<20){
+        if(randomPick50()<20 && parent.getLevel()<6+randomPick5()){
             return new ChildExpression(parent);
         }else {
             return new CompareExpression(parent);

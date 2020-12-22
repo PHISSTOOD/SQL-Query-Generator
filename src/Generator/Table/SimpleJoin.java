@@ -25,7 +25,7 @@ public class SimpleJoin extends JoinCondition{
                         rightRef.getAlias() + "." + rightColumn.getColumnName();
                 break;
             }
-            if((System.currentTimeMillis() - beginTime)>1000){
+            if((System.currentTimeMillis() - beginTime)>500){
                 throw new IllegalArgumentException("can't find specific sql type data when generate join condition");
             }
         }

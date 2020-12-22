@@ -30,6 +30,11 @@ public class Main {
             }
         }
         System.out.println("===the report of error generation:===");
+        int success = num;
+        for( Map.Entry<String, Integer> entry : errorReport.entrySet()){
+            success -= entry.getValue();
+        }
+        System.out.println("Successfully generated"+"\t\t" + success);
         for(Map.Entry<String, Integer> entry : errorReport.entrySet()){
             System.out.println(entry.getKey()+"\t\t" + entry.getValue());
         }

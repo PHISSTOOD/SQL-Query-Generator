@@ -10,6 +10,7 @@ import java.util.List;
 
 import static Generator.Random.RandomGenerate.*;
 
+// // Generate select clause part
 public class SelectList extends Node {
 
     List<Expression> expressions;
@@ -23,7 +24,7 @@ public class SelectList extends Node {
         derivedColumns = new Table();
         do{
             Expression expression = Expression.generate(this, null);
-            String newColumnName = "c" + String.valueOf(columns++);
+            String newColumnName = this.getScope().aliasGenerate("c_");
             derivedColumns.getColumns().add(new Column(newColumnName, expression.getSqlType()));
             expressions.add(expression);
         } while (randomPick50() < 25);

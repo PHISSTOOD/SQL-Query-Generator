@@ -16,6 +16,7 @@ public class ComputeExpression extends BinExpression{
         operator = new Operator(computeType.getCode(),computeType.getType(),computeType.getType(),computeType.getType());
         leftExpression = new ColumnRef(this,operator.getLeft());
         rightExpression = new ColumnRef(this,operator.getRight());
+        this.sqlType = SQLType.INT;
 
     }
 

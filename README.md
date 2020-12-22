@@ -54,62 +54,104 @@ CREATE TABLE t (
 模块的父类，主要负责承担树上每个结点的基础，例如记录它的父亲结点，记录当前的层数，记录scope。除Scope类，其余所有可能出现在语法树上的类
 都会继承这一个类。
 
-[Scope](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Node/Scope.java)类负责记录当前结点可以选择的Table及Column的范围，以及记录生成table的别名的编号。
+[Scope](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Node/Scope.java)类负责记录当前结点可以选
+择的Table及Column的范围，以及记录生成table的别名的编号。
 
-[Query](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/Query.java)类，承担一个查询入口的功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
+[Query](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/Query.java)类，承担一个查询入口的
+功能，是查询语句生成的根结点。其会生成三个子结点：SelectList，FromClause，WhereCondition，分别对应查询语句的
 三个部分。也在这一类中将各个子结点生成的语句整合。
 
-[SelectList](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/SelectList.java)类，负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
+[SelectList](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/SelectList.java)类，
+负责一个查询语句中select到from之间的生成，即搜索哪些列出来。同时也会将搜索出来的列名记录在一个list中。
 
-[FromClause](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/FromClause.java)类，负责一个查询语句中from到select之间的生成，即从哪些表中搜索，包含单独的表，join及子查询，
+[FromClause](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/FromClause.java)类，
+负责一个查询语句中from到select之间的生成，即从哪些表中搜索，包含单独的表，join及子查询，
 
 WhereCondition，负责一个查询语句where后的生成。
 
+[GroupBy](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Query/GroupBy.java)类，主要负责实现
+一个查询语句中group by子句的生成。在有聚合函数的条件下其生成的规则有如下前提：
+
+1.select里不只有一个聚合函数；
+2.聚合函数的列不能出现在group by里；
+3.如果select中除了聚合函数还有别的列，则大概率使用group by（保留了不实用的概率，尽管实际中可能没太大意义）；
+
 #### 目录[Element](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Element)中的类：
 
-枚举类[SQLType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/SQLType.java)，负责记录可能出现的数据类型，包括：int，string，bool，聚合。
+枚举类[SQLType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/SQLType.java)，
+负责记录可能出现的数据类型，包括：int，string，bool，聚合。
 
-枚举类[AggregateType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/AggregateType.java)，[CompareType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/CompareType.java)，[ComputeType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/ComputeType.java)枚举了可能出现的聚合函数，比较操作符，运算操作符以及他们对应的SQLType。
+枚举类[AggregateType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/AggregateType.java)，
+[CompareType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/CompareType.java)，
+[ComputeType](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/ComputeType.java)
+枚举了可能出现的聚合函数，比较操作符，运算操作符以及他们对应的SQLType。
 
-[Operator](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Operator.java)类和[Column](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Column.java)类对应的是操作符和一个数据库中列。
+[Operator](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Operator.java)类
+和[Column](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Column.java)类对应的是操作
+符和一个数据库中列。
 
-[Table](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Table.java)类负责表示一个表结构，包含表名，表的别名，表中的列。之后的子查询的结构也会被表示为一个Table，是一个比较重要的类。
+[Table](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Element/Table.java)类负责表示一个表结构，
+包含表名，表的别名，表中的列。之后的子查询的结构也会被表示为一个Table，是一个比较重要的类。
 
 #### 目录[Table](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Table)中的类：
 
-[TableRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableRef.java)类，代表表名的基础的类，在Node类的基础上添加储存Table的List。[TableOrQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableOrQuery.java)代表单个的表，[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)类代表多个表的Join，[SubQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/SubQuery.java)
+[TableRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableRef.java)类，
+代表表名的基础的类，在Node类的基础上添加储存Table的List。
+[TableOrQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/TableOrQuery.java)代表单个的表，
+[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)类代表多个表的Join，
+[SubQuery](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/SubQuery.java)
 代表子查询。
 
-[Join](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/Join.java)：[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)主要负责储存多个表的信息，join的类型和[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)。[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)类负责记录两个表Join的条件。
+[Join](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/Join.java)：
+[JoinTable](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinTable.java)
+主要负责储存多个表的信息，join的类型和[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)。
+[JoinCondition](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Table/JoinCondition.java)类负责记录两个表Join的条件。
 
 #### 目录[Expression](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Expression)中的类：
 
-这其中最基础的类是[Expression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/Expression.java)类，它继承类Node类，但也会被其他的该目录下的类继承。其添加了属性 SQLType，负责记录这一结点对应的SQL中的值的属性。
+这其中最基础的类是[Expression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/Expression.java)类，
+它继承类Node类，但也会被其他的该目录下的类继承。其添加了属性 SQLType，负责记录这一结点对应的SQL中的值的属性。
 同时这一个类中也有随机生成其他子类的方法generate。
 
-[ColumnRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ColumnRef.java)类代表那些会在select后会出现的列名，其在父类的基础上多了一个reference的属性，负责记录列名。
+[ColumnRef](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ColumnRef.java)
+类代表那些会在select后会出现的列名，其在父类的基础上多了一个reference的属性，负责记录列名。
 
-[AggregateExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/AggregateExpression.java)类负责表示聚合函数，其中会记录聚合函数的类型，以及以那一列作为聚合函数的根据。
+[AggregateExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/AggregateExpression.java)
+类负责表示聚合函数，其中会记录聚合函数的类型，以及以那一列作为聚合函数的根据。
 
-[BinExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/BinExpression.java)类，在Expression的基础上添加了两个子Expression，负责记录操作左右的两个Expression。其继承了Expression，被ComputeExpression，
+[BinExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/BinExpression.java)类，
+在Expression的基础上添加了两个子Expression，负责记录操作左右的两个Expression。其继承了Expression，被ComputeExpression，
 CompareExpression，ChildExpression类继承。
 
-[ComputeExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ComputeExpression.java)类，表示一个计算结果，例如：a+b。其有一个计算操作符和两个子Expression构成，通过计算符规定了两个子Expression的SQLType以及
+[ComputeExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ComputeExpression.java)类，
+表示一个计算结果，例如：a+b。其有一个计算操作符和两个子Expression构成，通过计算符规定了两个子Expression的SQLType以及
 结果的SQLType。
 
-[CompareExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/CompareExpression.java)类，表示一个计算结果，例如：a<56。其有一个比较操作符和两个子Expression构成，通过比较运算符规定了两个子Expression的SQLType。
+[CompareExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/CompareExpression.java)类，
+表示一个计算结果，例如：a<56。其有一个比较操作符和两个子Expression构成，通过比较运算符规定了两个子Expression的SQLType。CompareExpression
+中添加限制，如果leftExpression已经为常量，则rightExpression不能生成为常量。这是为了保证where condition中不会出现类似 "17>56"这种条件。
 
-[ChildExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ChildExpression.java)类，主要出现在whereClause后，负责扩大条件的数量。
+[ChildExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ChildExpression.java)类，
+主要出现在whereClause后，负责扩大条件的数量。
 
-[ConstExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ConstExpression.java)类，负责表示一个常量，在本项目中主要包含Int型和String型，对应数据库中Int和Varchar。常量的生成由随机生成函数RandomGenerate完成。
+[ConstExpression](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Expression/ConstExpression.java)类，
+负责表示一个常量，在本项目中主要包含Int型和String型，对应数据库中Int和Varchar。常量的生成由随机生成函数RandomGenerate完成。
 
 #### 目录[Random](https://github.com/PHISSTOOD/PingCAP_Assignment/tree/master/src/Generator/Random)中的类：
 
-[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomGenerate.java)类主要负责生成随机数和随机制定数据类型的值，[RandomPick](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomPick.java)主要负责从指定的List中随机抽取。
+[RandomGenerate](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomGenerate.java)
+类主要负责生成随机数和随机制定数据类型的值，[RandomPick](https://github.com/PHISSTOOD/PingCAP_Assignment/blob/master/src/Generator/Random/RandomPick.java)
+主要负责从指定的List中随机抽取。
 
-#### 难点实现：
+#### 实现重点：
 
-在完成的过程中，我认为值得注意的点主要包括：获取可以查询的范围、join及其他运算对应的数据类型的对称、找不到列的情况。
+在完成的过程中，我认为值得注意的点主要包括：生成子句顺序、获取可以查询的范围、join及其他运算对应的数据类型的对称、找不到列的情况。
+
+生成子句顺序：
+
+在实现中，生成子句的顺序按照 FromClause -> SelectList -> WhereCondition -> Group BY(Having) -> Limit进行。这么做的原因是首先确定
+表的范围，也就是select中有哪些列可被选择。其次根据Select里有无聚合函数帮助确定是否需要添加group by。如果按照书写顺序，则无法顺利生成子查询
+等相关部分。
 
 获取可以查询的范围：
 
@@ -130,52 +172,7 @@ join及其他运算对应的数据类型的对称：
 
 SELECT t_1.a FROM t as t_1 inner join （SELECT c FROM t as t_2 where a > 10) as sub_3 on a = ? where t_1/b < 20
 
-语句中？的地方就无法找到对应的列。因此，遇见类似无法执行下去的情况，解决办法是抛出错误及错误的信息，在最终执行完成生成一个执行报告。
-
-### 延伸
-#### 分布式
-在对分布式数据库及TiDB有一定了解后，做了一定的延伸。
-基于blog：[三篇文章了解TiDB技术内幕-说计算](https://pingcap.com/blog-cn/tidb-internal-2/) 中提到基于KV查询时，需要根据table和key值
-来构造左开右闭的区间，从这个区间中扫描每一行数据。因此创建Request类，其中保存key的起始值，key的终止值，要执行的SQL语句，以及alias
-（alias的用途后文会提到）。但因为本身的实现不依赖数据库，所以目前所有Request的key的区间设为【0，0）。
-
-但这种request是针对单表的，因为在TiDB中key的组成是由table id 和 row id组成的。所以在查询语句涉及到多表的情况时，上述的结构无法支持，
-因此需要对涉及到多表的SQL查询语句进行处理。同时因为之前博客中的提到的为了减少RPC调用（RPC调用，网络传播，IO会导致大量的开销），
-避免无意义的网络传输，所以要将计算尽量靠近结点，将Filter，聚合函数，Group By下推。这不仅更高效，在实现上也更简单。
-
-RPC类，意为实现远程调用针对单表的SQL语句的功能，其主要的方法为rpc()，旨在执行request返回Result。
-
-Result类，代表针对单表执行以此SQL语句后的结果集，在本项目中对单表执行一次的结果集由 < Execute (SQL查询语句) >表示。
-
-Select类，保存由上层传来的一条完整的查询语句（没有针对多表进行处理，一开始由查询语句生成器直接生成的），并且还保存这条语句是否针对多表，
-如果是，保存被划分为针对每一个表的语句。Select类完成调用RPC的操作。
-
-Executor类，意为执行SQL查询语句。里面主要分为两个部分，一个是根据传进的Query类，判断其是针对单表还是多表，然后生成对应的Request，进行执行。
-另一部分是如果Query类对应的是一个针对多表的查询语句，那么进行查询语句的拆分，生成子Query，并生成多个Request类。
-
-这里在实现时做了一定的假设：
-
-1. 假设在生成SQL语句时，列名都会有所属的表的信息。型如（a.id)，表示为表a里的属性。
-2. 假设在生成SQL语句时，表都被赋予了别名，这主要是因为本题的设定中只有一个表，所以当SQL语句如果进行Join时，需要赋予别名。之前提到的Request类
-中的alas就是为了保存这个信息，在最终的结果中有所显示。
-3. 不包含子查询。
-
-这样，这对一条查询语句：
-
-```SELECT a.id, b.code, c.name FROM t a, t b cross join t c WHERE a.id = 1 AND b.code > 8 AND c.name = 'jack'```
-
-其结果被表示为：
-
-```
-Execute (SELECT id FROM t WHERE id = 1) As a
-Result Union Execute (SELECT code FROM t WHERE code > 8) As b
-Result Union Execute (SELECT name FROM t WHERE name = 'jack') As c
-With the oringinal sql is (SELECT a.id, b.code, c.name FROM t a, t b cross join t c WHERE a.id = 1 AND b.code > 8 AND c.name = 'jack')
-```
-
-Execute意为针对子语句进行查询，Result Union意为针对子结果进行Join的实现，其实现原理可以与
-[TiDB源码阅读系列文章](https://pingcap.com/blog-cn/tidb-source-code-reading-9/) 提到的相符，但本项目没有涉及，最后附上原查询语句。
-
+语句中"？"的地方就无法找到对应的列。因此，遇见类似无法执行下去的情况，解决办法是抛出错误及错误的信息，在最终执行完成生成一个执行报告。
 
 ### 实际测试
 
@@ -197,17 +194,14 @@ Execute意为针对子语句进行查询，Result Union意为针对子结果进�
 ![image](https://github.com/PHISSTOOD/PingCAP-HomeWork/blob/main/Images/%E9%94%99%E8%AF%AF%E8%BE%93%E5%85%A5.png)
 
 ### 说明
-1. 设计中的子句只包含了SELECT，FROM，JOIN（JOIN，CROSS JOIN，INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，USING，WHERE，
+1. 设计中的子句只包含了SELECT，FROM，JOIN（INNER JOIN，LEFT JOIN，RIGHT JOIN），ON，WHERE，
 GROUP BY，HAVING，ORDER BY，LIMIT，及五个聚合函数（COUNT，AVG，SUM，MIN，MAX）其余的子句类似BETWEEN，EXIST,IN暂无涉及。
-2. 生成的SQL查询语句除了Join type，order type，聚合函数因为人为输入可能为小写，其余子句自动生成为大写。
-3. 设计中，默认每一个join对应的on只有一组，主要原因是为了在终端输入时更好表达。
-4. 测试中，终端输入暂不支持子查询，因为会导致输入时过于繁琐。生成带有子查询的SQL语句在查询的第一部分有被涵盖。
+2. 生成的SQL查询语句均为小写。
+3. 项目中默认了表的结构为题目中所给的表t的结构。
+4. 
+5. 
+6.
 
 
 
 ## 参考资料
-[三篇文章了解TiDB技术内幕-说计算](https://pingcap.com/blog-cn/tidb-internal-2/)
-
-[TiDB源码阅读系列文章](https://pingcap.com/blog-cn/tidb-source-code-reading-9/)
-
-[TPC-H query plan](http://www.qdpma.com/tpch/TPCH100_Query_plans.html)

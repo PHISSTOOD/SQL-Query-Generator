@@ -1,7 +1,5 @@
 package Generator.Query;
 
-
-
 import Generator.Element.Table;
 import Generator.Node.Node;
 import Generator.Table.TableRef;
@@ -9,6 +7,7 @@ import Generator.Table.TableRef;
 import java.util.ArrayList;
 import java.util.List;
 
+// Generate from clause part
 public class FromClause extends Node {
     List<TableRef> tableRefs;
 

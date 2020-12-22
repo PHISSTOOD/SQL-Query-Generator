@@ -34,4 +34,9 @@ public class Table {
         this.alias = alias;
     }
 
+    public static void copy(Table table,Table target){
+        target.name = table.name;
+        target.columns = new ArrayList<>(table.columns);
+    }
+
 }
